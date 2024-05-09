@@ -6,23 +6,23 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.myremainder.databinding.ActivityRemainderBinding
+import com.example.myremainder.databinding.ActivityAddRemainderBinding
 
-class RemainderActivity : AppCompatActivity() {
+class AddRemainderActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityRemainderBinding
+    private lateinit var binding: ActivityAddRemainderBinding
     private lateinit var db: RemainderDbHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_remainder)
+        setContentView(R.layout.activity_add_remainder)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding = ActivityRemainderBinding.inflate(layoutInflater)
+        binding = ActivityAddRemainderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         db = RemainderDbHelper(this)

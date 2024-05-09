@@ -37,7 +37,7 @@ class HomeActivity : AppCompatActivity() {
 
 
         binding.addButton.setOnClickListener {
-            val intent = Intent(this, RemainderActivity::class.java)
+            val intent = Intent(this, AddRemainderActivity::class.java)
             startActivity(intent)
         }
     }

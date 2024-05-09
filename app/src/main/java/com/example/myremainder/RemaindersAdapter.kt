@@ -1,9 +1,11 @@
 package com.example.myremainder
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -13,7 +15,8 @@ class RemaindersAdapter (private var remainders: List<Remainder>, context: Conte
         val title: TextView = itemView.findViewById(R.id.remainderCardTitle)
         val time: TextView = itemView.findViewById(R.id.remainderCardTime)
         val date: TextView = itemView.findViewById(R.id.remainderCardDate)
-        val active: TextView = itemView.findViewById(R.id.remainderCardActiveButton)
+        val active: TextView = itemView.findViewById(R.id.remainderCardStatusButton)
+        val updateButton: ImageView = itemView.findViewById(R.id.editButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemainderViewHolder {
@@ -29,6 +32,14 @@ class RemaindersAdapter (private var remainders: List<Remainder>, context: Conte
         holder.time.text = remainder.time
         holder.date.text = remainder.date
         holder.active.text = remainder.active
+
+        holder.updateButton.setOnClickListener {
+            val intent = Intent(holder.itemView.context, UpdateRemainderActivity::class.java).apply {
+                putExtra("id", remainder.id)
+            }
+
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     fun refreshData(newRemainders: List<Remainder>){

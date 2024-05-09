@@ -68,4 +68,38 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.close()
         return remainderList
     }
+
+    fun updateRemainder(remainder: Remainder){
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_TITLE, remainder.title)
+            put(COLUMN_CONTENT, remainder.content)
+            put(COLUMN_TIME, remainder.time)
+            put(COLUMN_DATE, remainder.date)
+            put(COLUMN_REPEAT, remainder.repeat)
+            put(COLUMN_ACTIVE, remainder.active)
+        }
+        val whereClause = "$COLUMN_ID = ?"
+        val whereArgs = arrayOf(remainder.id.toString())
+        db.update(TABLE_NAME, values, whereClause, whereArgs)
+        db.close()
+    }
+
+    fun getRemainderById(id: Int): Remainder{
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $id"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+        val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+        val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
+        val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
+        val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
+        val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
+        val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
+        cursor.close()
+        db.close()
+        return Remainder(id, title, content, time, date, repeat, active)
+    }
 }

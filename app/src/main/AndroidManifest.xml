@@ -13,10 +13,13 @@
         android:theme="@style/Theme.MyRemainder"
         tools:targetApi="31">
         <activity
+            android:name=".UpdateRemainderActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".RemainderActivity"
+            android:name=".AddRemainderActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
