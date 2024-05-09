@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="#66000000"/> <!-- semi-transparent black for shadow -->
+            <corners android:radius="12dp"/> <!-- larger radius for shadow -->
+        </shape>
+    </item>
+    <item android:drawable="@drawable/blue_border"/>
+</layer-list>

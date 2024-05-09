@@ -44,4 +44,28 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.insert(TABLE_NAME, null, values)
         db.close()
     }
+
+    fun getAllRemainders(): List<Remainder>{
+        val remainderList = mutableListOf<Remainder>()
+        val db = readableDatabase
+        val getAllQuery = "SELECT * FROM $TABLE_NAME"
+        val cursor = db.rawQuery(getAllQuery, null)
+
+        while (cursor.moveToNext()){
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+            val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
+            val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
+            val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
+            val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
+            val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
+
+            val remainder = Remainder(id, title, content, time, date, repeat, active)
+            remainderList.add(remainder)
+        }
+
+        cursor.close()
+        db.close()
+        return remainderList
+    }
 }
