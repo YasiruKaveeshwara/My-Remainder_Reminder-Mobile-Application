@@ -7,39 +7,79 @@
     android:layout_height="match_parent"
     tools:context=".UpdateRemainderActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/updateHeader"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/border_bottom"
+        android:backgroundTint="@color/blue"
+        android:paddingTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/main_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/fraunces_bold"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/updateBackButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/main_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.416"
+            app:srcCompat="@drawable/back1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <EditText
         android:id="@+id/editRepeatEditText"
-        android:layout_width="335dp"
-        android:layout_height="54dp"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/blue_border"
         android:gravity="top"
-        android:hint="Enter Repeat"
+        android:hint="Repeat"
         android:paddingLeft="25dp"
         android:paddingTop="14dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.877"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTimeEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/editTitleEditText" />
+
+    <Spinner
+    android:id="@+id/editMeridianSpinner"
+    android:layout_width="110dp"
+    android:layout_height="55dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginEnd="36dp"
+    android:background="@drawable/blue_border"
+        android:paddingHorizontal="20dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.925"
+    app:layout_constraintStart_toEndOf="@+id/editTimeEditText"
+    app:layout_constraintTop_toBottomOf="@+id/editRepeatEditText" />
+
 
     <TextView
-        android:id="@+id/editRemainder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:fontFamily="@font/fraunces_bold"
-        android:text="Edit Remainder"
-        android:textColor="@color/blue"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
         android:id="@+id/editTimeEditText"
-        android:layout_width="335dp"
-        android:layout_height="54dp"
+        android:layout_width="200dp"
+        android:layout_height="55dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/blue_border"
         android:gravity="top"
@@ -48,13 +88,14 @@
         android:paddingTop="14dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editDateEditText" />
 
-    <EditText
+    <TextView
         android:id="@+id/editDateEditText"
-        android:layout_width="335dp"
-        android:layout_height="54dp"
+        android:layout_width="200dp"
+        android:layout_height="55dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/blue_border"
         android:gravity="top"
@@ -63,14 +104,15 @@
         android:paddingTop="14dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTitleEditText" />
 
     <EditText
         android:id="@+id/editTitleEditText"
         android:layout_width="335dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="36dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/blue_border"
         android:gravity="top"
         android:hint="Enter Title"
@@ -79,13 +121,13 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editRemainder" />
+        app:layout_constraintTop_toBottomOf="@+id/updateHeader" />
 
     <EditText
         android:id="@+id/editContentEditText"
         android:layout_width="335dp"
         android:layout_height="250dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="25dp"
         android:background="@drawable/blue_border"
         android:gravity="top"
         android:hint="Enter Content"
@@ -94,28 +136,50 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editRepeatEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/editTimeEditText" />
 
     <ImageView
         android:id="@+id/editSaveButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTitleEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.897"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editContentEditText"
+        app:layout_constraintHorizontal_bias="0.234"
+        app:layout_constraintStart_toEndOf="@+id/Save"
+        app:layout_constraintTop_toBottomOf="@+id/updateHeader"
         app:srcCompat="@drawable/done" />
 
     <Switch
         android:id="@+id/activeEditStatus"
         android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTitleEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.108"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/updateHeader" />
+
+    <TextView
+        android:id="@+id/Save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTitleEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.582"
+        app:layout_constraintStart_toEndOf="@+id/activeEditStatus"
+        app:layout_constraintTop_toBottomOf="@+id/updateHeader" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="57dp"
+        android:layout_height="27dp"
+        android:text="Active"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTitleEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.107"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editContentEditText"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/updateHeader" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,12 +16,13 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         const val COLUMN_CONTENT = "content"
         const val COLUMN_TIME = "time"
         const val COLUMN_DATE = "date"
+        const val COLUMN_MERIDIAN = "meridian"
         const val COLUMN_REPEAT = "repeat"
         const val COLUMN_ACTIVE = "active"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TITLE TEXT, $COLUMN_CONTENT TEXT, $COLUMN_TIME TEXT, $COLUMN_DATE TEXT, $COLUMN_REPEAT TEXT, $COLUMN_ACTIVE TEXT)"
+        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TITLE TEXT, $COLUMN_CONTENT TEXT, $COLUMN_TIME TEXT, $COLUMN_DATE TEXT, $COLUMN_MERIDIAN TEXT, $COLUMN_REPEAT TEXT, $COLUMN_ACTIVE TEXT)"
         db?.execSQL(createTableQuery)
     }
 
@@ -31,18 +32,19 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         onCreate(db)
     }
 
-    fun insertRemainder(title: String, content: String, time: String, date: String, repeat: String, active: String){
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COLUMN_TITLE, title)
-            put(COLUMN_CONTENT, content)
-            put(COLUMN_TIME, time)
-            put(COLUMN_DATE, date)
-            put(COLUMN_REPEAT, repeat)
-            put(COLUMN_ACTIVE, active)
-        }
-        db.insert(TABLE_NAME, null, values)
-        db.close()
+    fun insertRemainder(title: String, content: String, time: String, date: String, meridian: String, repeat: String, active: String): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+
+        contentValues.put(COLUMN_TITLE, title)
+        contentValues.put(COLUMN_CONTENT, content)
+        contentValues.put(COLUMN_TIME, time)
+        contentValues.put(COLUMN_DATE, date)
+        contentValues.put(COLUMN_MERIDIAN, meridian)
+        contentValues.put(COLUMN_REPEAT, repeat)
+        contentValues.put(COLUMN_ACTIVE, active)
+
+        return db.insert(TABLE_NAME, null, contentValues)
     }
 
     fun getAllRemainders(): List<Remainder>{
@@ -57,10 +59,11 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
             val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
             val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
             val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
+            val meridian = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MERIDIAN))
             val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
             val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
 
-            val remainder = Remainder(id, title, content, time, date, repeat, active)
+            val remainder = Remainder(id, title, content, time, date, meridian, repeat, active)
             remainderList.add(remainder)
         }
 
@@ -76,6 +79,7 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
             put(COLUMN_CONTENT, remainder.content)
             put(COLUMN_TIME, remainder.time)
             put(COLUMN_DATE, remainder.date)
+            put(COLUMN_MERIDIAN, remainder.meridian)
             put(COLUMN_REPEAT, remainder.repeat)
             put(COLUMN_ACTIVE, remainder.active)
         }
@@ -96,11 +100,12 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
         val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
         val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
+        val meridian = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MERIDIAN))
         val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
         val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
         cursor.close()
         db.close()
-        return Remainder(id, title, content, time, date, repeat, active)
+        return Remainder(id, title, content, time, date, meridian, repeat, active)
     }
 
     fun deleteRemainder(id: Int){

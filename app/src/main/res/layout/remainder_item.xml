@@ -28,40 +28,62 @@
                 android:id="@+id/remainderCardTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
                 android:text="Title"
                 android:textColor="@color/blue"
                 android:textSize="28sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.049"
+                app:layout_constraintHorizontal_bias="0.048"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.095" />
 
             <TextView
                 android:id="@+id/remainderCardDate"
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:text="Date"
                 android:textColor="#505050"
                 android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.061"
+                app:layout_constraintHorizontal_bias="0.092"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle"
+                app:layout_constraintVertical_bias="0.357" />
 
             <TextView
                 android:id="@+id/remainderCardTime"
-                android:layout_width="120dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Time"
                 android:textColor="#505050"
                 android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/remainderCardDate"
-                app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle"
+                app:layout_constraintVertical_bias="0.1" />
+
+            <TextView
+                android:id="@+id/remainderCardMeridian"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Mer"
+                android:textColor="#505050"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/remainderCardTime"
+                app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle"
+                app:layout_constraintVertical_bias="0.1" />
 
             <Switch
                 android:id="@+id/remainderCardStatusButton"
@@ -70,31 +92,11 @@
                 android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/remainderCardTitle"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.136" />
+                app:layout_constraintVertical_bias="0.178" />
 
-            <ImageView
-                android:id="@+id/editButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.831"
-                app:layout_constraintStart_toEndOf="@+id/remainderCardTime"
-                app:layout_constraintTop_toBottomOf="@+id/remainderCardStatusButton"
-                app:layout_constraintVertical_bias="0.606"
-                app:srcCompat="@drawable/edit" />
-
-            <ImageView
-                android:id="@+id/deleteButton"
-                android:layout_width="34dp"
-                android:layout_height="33dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/editButton"
-                app:layout_constraintStart_toEndOf="@+id/remainderCardTime"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.814"
-                app:srcCompat="@drawable/delete" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
