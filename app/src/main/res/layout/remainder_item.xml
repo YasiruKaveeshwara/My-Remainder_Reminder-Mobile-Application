@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginHorizontal="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
+    app:cardElevation="5dp"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -17,9 +19,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/remainder_card"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="120dp"
             android:background="@drawable/blue_border"
-            android:padding="10dp">
+            android:paddingTop="10dp"
+            android:paddingVertical="10dp">
 
             <TextView
                 android:id="@+id/remainderCardTitle"
@@ -39,11 +42,11 @@
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Content"
+                android:text="Date"
                 android:textColor="#505050"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintHorizontal_bias="0.061"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/remainderCardTitle" />
 
@@ -68,7 +71,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.12" />
+                app:layout_constraintVertical_bias="0.136" />
 
             <ImageView
                 android:id="@+id/editButton"
@@ -76,10 +79,22 @@
                 android:layout_height="30dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.729"
+                app:layout_constraintHorizontal_bias="0.831"
                 app:layout_constraintStart_toEndOf="@+id/remainderCardTime"
                 app:layout_constraintTop_toBottomOf="@+id/remainderCardStatusButton"
+                app:layout_constraintVertical_bias="0.606"
                 app:srcCompat="@drawable/edit" />
+
+            <ImageView
+                android:id="@+id/deleteButton"
+                android:layout_width="34dp"
+                android:layout_height="33dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/editButton"
+                app:layout_constraintStart_toEndOf="@+id/remainderCardTime"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.814"
+                app:srcCompat="@drawable/delete" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -102,4 +102,12 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.close()
         return Remainder(id, title, content, time, date, repeat, active)
     }
+
+    fun deleteRemainder(id: Int){
+        val db = writableDatabase
+        val whereClause = "$COLUMN_ID = ?"
+        val whereArgs = arrayOf(id.toString())
+        db.delete(TABLE_NAME, whereClause, whereArgs)
+        db.close()
+    }
 }
