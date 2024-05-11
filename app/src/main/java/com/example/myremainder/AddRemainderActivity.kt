@@ -115,7 +115,7 @@ class AddRemainderActivity : AppCompatActivity() {
             val repeat = binding.repeatEditText.text.toString()
             val active = binding.activeEditStatus.isChecked.toString()
             val remainderId = db.insertRemainder(title, content, time, date, meridian, repeat, active)
-            setAlarm(remainderId, title, content, date, time, meridian, active)
+            setAlarm(remainderId, title, content, date, time, meridian, active, repeat.toInt())
             finish()
             Toast.makeText(this, "Remainder Saved", Toast.LENGTH_SHORT).show()
         }
@@ -142,7 +142,7 @@ class AddRemainderActivity : AppCompatActivity() {
             }
         }
     }
-    private fun setAlarm(id: Long, title: String, content: String, date: String, time: String, meridian: String, active: String) {
+    private fun setAlarm(id: Long, title: String, content: String, date: String, time: String, meridian: String, active: String, repeat:Int) {
         if (active == "true") {
             val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
             val dateInString = "$date $time $meridian"
@@ -157,14 +157,18 @@ class AddRemainderActivity : AppCompatActivity() {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))
                 startActivity(intent)
             } else {
-                val intent = Intent(this, RemainderAlarmReceiver::class.java).apply {
-                    putExtra("title", title)
-                    putExtra("content", content)
-                    putExtra("id", id.toInt())
-                }
+                for (i in 0 until repeat) {
+                    val intent = Intent(this, RemainderAlarmReceiver::class.java).apply {
+                        putExtra("title", title)
+                        putExtra("content", content)
+                        putExtra("id", id.toInt())
+                    }
 
-                val pendingIntent = PendingIntent.getBroadcast(this, id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+                    val pendingIntent = PendingIntent.getBroadcast(this, id.toInt() + i, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                    // Set the alarm to go off after i * 5 seconds
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + i * 5000, pendingIntent)
+                }
             }
         }
     }
@@ -188,7 +192,7 @@ class AddRemainderActivity : AppCompatActivity() {
         val repeat = binding.repeatEditText.text.toString()
         val active = binding.activeEditStatus.isChecked.toString()
         val remainderId = db.insertRemainder(title, content, time, date, meridian, repeat, active)
-        setAlarm(remainderId, title, content, date, time, meridian, active)
+        setAlarm(remainderId, title, content, date, time, meridian, active, repeat.toInt())
     }
 
 }
