@@ -1,1 +1,1 @@
-<h1> All commites are in the master branch </h1>
+<h1> All commits are in the master branch </h1>
