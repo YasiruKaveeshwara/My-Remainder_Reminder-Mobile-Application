@@ -19,10 +19,10 @@ import android.app.PendingIntent
 import android.os.Build
 import android.provider.Settings
 import android.net.Uri
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.AdapterView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class UpdateRemainderActivity : AppCompatActivity() {
 
@@ -30,6 +30,7 @@ class UpdateRemainderActivity : AppCompatActivity() {
     private lateinit var db: RemainderDbHelper
     private var id: Long = -1
     private var selectedDate: String = ""
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,36 +53,30 @@ class UpdateRemainderActivity : AppCompatActivity() {
             return
         }
 
-        val remainder = db.getRemainderById(id.toInt())
-        val meridianValues = arrayOf("AM", "PM")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, meridianValues)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.editMeridianSpinner.adapter = adapter
+        scope.launch {
+            val remainder = db.getRemainderById(id.toInt())
+            if (remainder != null) {
+                val meridianValues = arrayOf("AM", "PM")
+                val adapter = ArrayAdapter(this@UpdateRemainderActivity, android.R.layout.simple_spinner_item, meridianValues)
+                val meridianIndex = adapter.getPosition(remainder.meridian)
 
-        // Check if remainder is not null before accessing its properties
-        if (remainder != null) {
-            val meridianValues = arrayOf("AM", "PM")
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, meridianValues)
-            val meridianIndex = adapter.getPosition(remainder.meridian)
-
-            binding.editTitleEditText.setText(remainder.title)
-            binding.editContentEditText.setText(remainder.content)
-            binding.editDateEditText.setText(remainder.date)
-            binding.editTimeEditText.setText(remainder.time)
-            binding.editRepeatNumberPicker.minValue = 1
-            binding.editRepeatNumberPicker.maxValue = 5
-            binding.editRepeatNumberPicker.value = remainder.repeat.toInt()
-            binding.editMeridianSpinner.adapter = adapter
-            binding.editMeridianSpinner.setSelection(meridianIndex)
-            binding.activeEditStatus.isChecked = remainder.active == "true"
-        } else {
-            // Handle the case where remainder is null
-            // For example, you could show an error message and finish the activity
-            Toast.makeText(this, "Error: Remainder not found", Toast.LENGTH_SHORT).show()
-            finish()
+                binding.editTitleEditText.setText(remainder.title)
+                binding.editContentEditText.setText(remainder.content)
+                binding.editDateEditText.setText(remainder.date)
+                binding.editTimeEditText.setText(remainder.time)
+                binding.editRepeatNumberPicker.minValue = 1
+                binding.editRepeatNumberPicker.maxValue = 5
+                binding.editRepeatNumberPicker.value = remainder.repeat.toInt()
+                binding.editMeridianSpinner.adapter = adapter
+                binding.editMeridianSpinner.setSelection(meridianIndex)
+                binding.activeEditStatus.isChecked = remainder.active == "true"
+            } else {
+                // Handle the case where remainder is null
+                // For example, you could show an error message and finish the activity
+                Toast.makeText(this@UpdateRemainderActivity, "Error: Remainder not found", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         binding.editRepeatNumberPicker.setOnValueChangedListener { _, _, newVal ->
             // Handle value change
@@ -130,11 +125,14 @@ class UpdateRemainderActivity : AppCompatActivity() {
             val repeat = binding.editRepeatNumberPicker.value?.toString() ?: ""
             val active = binding.activeEditStatus.isChecked?.toString() ?: ""
             val updatedRemainder = Remainder(id.toInt(), title, content, time, date, meridian, repeat, active)
-            setAlarm(id, title, content, date, time, meridian, active, repeat.toInt())
-            db.updateRemainder(updatedRemainder)
-            finish()
 
-            Toast.makeText(this, "Remainder updated", Toast.LENGTH_SHORT).show()
+            scope.launch {
+                db.updateRemainder(updatedRemainder)
+                setAlarm(id, title, content, date, time, meridian, active, repeat.toInt())
+                finish()
+
+                Toast.makeText(this@UpdateRemainderActivity, "Remainder updated", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.updateBackButton.setOnClickListener {
@@ -179,5 +177,10 @@ class UpdateRemainderActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }
