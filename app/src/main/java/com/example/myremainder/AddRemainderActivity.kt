@@ -23,6 +23,10 @@ import android.provider.Settings
 import android.net.Uri
 import android.view.View
 import android.widget.AdapterView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class AddRemainderActivity : AppCompatActivity() {
 
@@ -30,6 +34,8 @@ class AddRemainderActivity : AppCompatActivity() {
     private lateinit var db: RemainderDbHelper
     private var selectedDate: String = ""
     private var selectedTime: String = ""
+    private val scope = CoroutineScope(Dispatchers.Main)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,17 +118,23 @@ class AddRemainderActivity : AppCompatActivity() {
             val meridian = binding.meridianSpinner.selectedItem?.toString() ?: ""
             val repeat = binding.repeatEditText.value?.toString() ?: ""
             val active = binding.activeEditStatus.isChecked?.toString() ?: ""
-            val newRemainder = Remainder(0, title, content, time, date, meridian, repeat, active)
-            setAlarm(newRemainder.id.toLong(), title, content, date, time, meridian, active, repeat.toInt())
-            db.addRemainder(newRemainder)
-            finish()
 
-            Toast.makeText(this, "Remainder added", Toast.LENGTH_SHORT).show()
+            scope.launch {
+                val id = db.insertRemainder(title, content, time, date, meridian, repeat, active)
+                setAlarm(id, title, content, date, time, meridian, active, repeat.toInt())
+                finish()
+
+                Toast.makeText(this@AddRemainderActivity, "Remainder added", Toast.LENGTH_SHORT).show()
+            }
+
+
         }
 
         binding.addBackButton.setOnClickListener {
             finish()
         }
+
+
     }
 
     private fun setAlarm(id: Long, title: String, content: String, date: String, time: String, meridian: String, active: String, repeat: Int) {
@@ -154,5 +166,10 @@ class AddRemainderActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

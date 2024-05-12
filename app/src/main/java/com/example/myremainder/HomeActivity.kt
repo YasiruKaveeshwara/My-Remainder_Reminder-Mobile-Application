@@ -4,13 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myremainder.databinding.ActivityHomeBinding
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import kotlin.math.roundToInt
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
 
@@ -32,11 +31,16 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = RemainderDbHelper(this)
-        remainderAdapter = RemaindersAdapter(db.getAllRemainders(), this)
 
-        binding.remainderRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.remainderRecyclerView.adapter = remainderAdapter
+        remainderAdapter = RemaindersAdapter(listOf(), this@HomeActivity) // Initialize with an empty list
 
+        lifecycleScope.launch {
+            val remainders = db.getAllRemainders()
+            remainderAdapter.refreshData(remainders)
+
+            binding.remainderRecyclerView.layoutManager = LinearLayoutManager(this@HomeActivity)
+            binding.remainderRecyclerView.adapter = remainderAdapter
+        }
 
 
         binding.addButton.setOnClickListener {
@@ -44,11 +48,10 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
     override fun onResume() {
         super.onResume()
-        remainderAdapter.refreshData(db.getAllRemainders())
+        lifecycleScope.launch {
+            remainderAdapter.refreshData(db.getAllRemainders())
+        }
     }
-
-
 }

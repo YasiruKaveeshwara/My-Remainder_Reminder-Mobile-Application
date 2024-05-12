@@ -6,11 +6,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import java.util.Locale
+import kotlinx.coroutines.runBlocking
 
 class RemainderAlarmReceiver : BroadcastReceiver() {
 
@@ -55,15 +53,18 @@ class RemainderAlarmReceiver : BroadcastReceiver() {
         editor.apply()
 
         val db = RemainderDbHelper(context)
-        val remainder = db.getRemainderById(id)
 
-        if (remainder != null) {
-            val repeatCount = remainder.repeat.toInt()
+        runBlocking {
+            val remainder = db.getRemainderById(id)
 
-            // If the count equals the repeat count, set the remainder as inactive
-            if (currentCount + 1 >= repeatCount) {
-                val updatedRemainder = Remainder(id, remainder.title, remainder.content, remainder.time, remainder.date, remainder.meridian, remainder.repeat, "false")
-                db.updateRemainder(updatedRemainder)
+            if (remainder != null) {
+                val repeatCount = remainder.repeat.toInt()
+
+                // If the count equals the repeat count, set the remainder as inactive
+                if (currentCount + 1 >= repeatCount) {
+                    val updatedRemainder = Remainder(id, remainder.title, remainder.content, remainder.time, remainder.date, remainder.meridian, remainder.repeat, "false")
+                    db.updateRemainder(updatedRemainder)
+                }
             }
         }
 

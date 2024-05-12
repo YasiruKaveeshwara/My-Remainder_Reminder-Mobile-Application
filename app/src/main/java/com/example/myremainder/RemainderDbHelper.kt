@@ -4,6 +4,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+
 
 class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
 
@@ -32,8 +36,8 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         onCreate(db)
     }
 
-    fun insertRemainder(title: String, content: String, time: String, date: String, meridian: String, repeat: String, active: String): Long {
-        val db = this.writableDatabase
+    suspend fun insertRemainder(title: String, content: String, time: String, date: String, meridian: String, repeat: String, active: String): Long = withContext(Dispatchers.IO) {
+        val db = this@RemainderDbHelper.writableDatabase
         val contentValues = ContentValues()
 
         contentValues.put(COLUMN_TITLE, title)
@@ -44,10 +48,10 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         contentValues.put(COLUMN_REPEAT, repeat)
         contentValues.put(COLUMN_ACTIVE, active)
 
-        return db.insert(TABLE_NAME, null, contentValues)
+        db.insert(TABLE_NAME, null, contentValues)
     }
 
-    fun getAllRemainders(): List<Remainder>{
+    suspend fun getAllRemainders(): List<Remainder> = withContext(Dispatchers.IO) {
         val remainderList = mutableListOf<Remainder>()
         val db = readableDatabase
         val getAllQuery = "SELECT * FROM $TABLE_NAME"
@@ -69,10 +73,10 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
 
         cursor.close()
         db.close()
-        return remainderList
+        remainderList
     }
 
-    fun updateRemainder(remainder: Remainder){
+    suspend fun updateRemainder(remainder: Remainder) = withContext(Dispatchers.IO) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_TITLE, remainder.title)
@@ -89,7 +93,7 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
-    fun getRemainderById(id: Int): Remainder? {
+    suspend fun getRemainderById(id: Int): Remainder? = withContext(Dispatchers.IO) {
         val db = readableDatabase
         val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $id"
         val cursor = db.rawQuery(query, null)
@@ -104,15 +108,15 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
             val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
             cursor.close()
             db.close()
-            return Remainder(id, title, content, time, date, meridian, repeat, active)
+            Remainder(id, title, content, time, date, meridian, repeat, active)
         } else {
             cursor.close()
             db.close()
-            return null
+            null
         }
     }
 
-    fun deleteRemainder(id: Int){
+    suspend fun deleteRemainder(id: Int) = withContext(Dispatchers.IO) {
         val db = writableDatabase
         val whereClause = "$COLUMN_ID = ?"
         val whereArgs = arrayOf(id.toString())
@@ -120,8 +124,8 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
-    fun addRemainder(remainder: Remainder): Long {
-        val db = this.writableDatabase
+    suspend fun addRemainder(remainder: Remainder): Long = withContext(Dispatchers.IO) {
+        val db = this@RemainderDbHelper.writableDatabase
         val contentValues = ContentValues()
 
         contentValues.put(COLUMN_TITLE, remainder.title)
@@ -132,6 +136,6 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         contentValues.put(COLUMN_REPEAT, remainder.repeat)
         contentValues.put(COLUMN_ACTIVE, remainder.active)
 
-        return db.insert(TABLE_NAME, null, contentValues)
+        db.insert(TABLE_NAME, null, contentValues)
     }
 }
