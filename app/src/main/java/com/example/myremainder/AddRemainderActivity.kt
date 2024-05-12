@@ -21,6 +21,8 @@ import android.app.PendingIntent
 import android.os.Build
 import android.provider.Settings
 import android.net.Uri
+import android.view.View
+import android.widget.AdapterView
 
 class AddRemainderActivity : AppCompatActivity() {
 
@@ -32,7 +34,10 @@ class AddRemainderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_remainder)
+
+        binding = ActivityAddRemainderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -41,13 +46,27 @@ class AddRemainderActivity : AppCompatActivity() {
 
         val meridianValues = arrayOf("AM", "PM")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, meridianValues)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        binding = ActivityAddRemainderBinding.inflate(layoutInflater)
         binding.meridianSpinner.adapter = adapter
 
+        binding.meridianSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                val selectedMeridian = parent.getItemAtPosition(position).toString()
+                val timeText = binding.timeEditText.text.toString()
+                if (timeText.isNotEmpty()) {
+                    val time = timeText.split(":")
+                    val hour = Integer.parseInt(time[0])
+                    val adjustedHour = if (selectedMeridian == "AM" && hour >= 12) hour - 12 else if (selectedMeridian == "PM" && hour < 12) hour + 12 else hour
+                    binding.timeEditText.setText("$adjustedHour:${time[1]}")
+                }
+            }
 
-        setContentView(binding.root)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        binding.repeatEditText.minValue = 1
+        binding.repeatEditText.maxValue = 5
 
         db = RemainderDbHelper(this)
 
@@ -66,83 +85,47 @@ class AddRemainderActivity : AppCompatActivity() {
             datePickerDialog.show()
         }
 
-
         binding.timeEditText.setOnClickListener {
             val calendar = Calendar.getInstance()
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
 
-            TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-                selectedTime = "$selectedHour:$selectedMinute"
-                binding.timeEditText.setText(selectedTime)
-            }, hour, minute, true).show()
+            // Adjust the hour based on the meridian selected in the spinner
+            val adjustedHour = if (binding.meridianSpinner.selectedItem.toString() == "PM" && hour < 12) hour + 12 else hour
+
+            TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, selectedHour, selectedMinute ->
+                val selectedTimeHour = if (selectedHour < 12) selectedHour else selectedHour - 12
+                selectedTime = String.format("%02d:%02d", selectedTimeHour, selectedMinute)
+                binding.timeEditText.text = selectedTime
+
+                // Set the meridian based on the selected hour
+                val meridian = if (selectedHour < 12) "AM" else "PM"
+                binding.meridianSpinner.setSelection((binding.meridianSpinner.adapter as ArrayAdapter<String>).getPosition(meridian))
+            }, adjustedHour, minute, false).show() // Set is24HourView to false
         }
 
-
-        binding.repeatEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val input = s.toString()
-                if (input.isNotEmpty()) {
-                    try {
-                        val value = input.toInt()
-                        if (value < 1 || value > 5) {
-                            // If the value is less than 1, reset it to 1
-                            binding.repeatEditText.setText("1")
-                        }
-                    } catch (e: NumberFormatException) {
-                        // If the input is not a number, reset it to 1
-                        binding.repeatEditText.setText("1")
-                    }
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // No action needed here
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // No action needed here
-            }
-        })
-
-
         binding.saveButton.setOnClickListener {
-            val title = binding.titleEditText.text.toString()
-            val content = binding.contentEditText.text.toString()
-            val time = binding.timeEditText.text.toString()
-            val date = binding.dateEditText.text.toString()
-            val meridian = binding.meridianSpinner.selectedItem.toString()
-            val repeat = binding.repeatEditText.text.toString()
-            val active = binding.activeEditStatus.isChecked.toString()
-            val remainderId = db.insertRemainder(title, content, time, date, meridian, repeat, active)
-            setAlarm(remainderId, title, content, date, time, meridian, active, repeat.toInt())
+            val title = binding.titleEditText.text?.toString() ?: ""
+            val content = binding.contentEditText.text?.toString() ?: ""
+            val time = binding.timeEditText.text?.toString() ?: ""
+            val date = binding.dateEditText.text?.toString() ?: ""
+            val meridian = binding.meridianSpinner.selectedItem?.toString() ?: ""
+            val repeat = binding.repeatEditText.value?.toString() ?: ""
+            val active = binding.activeEditStatus.isChecked?.toString() ?: ""
+            val newRemainder = Remainder(0, title, content, time, date, meridian, repeat, active)
+            setAlarm(newRemainder.id.toLong(), title, content, date, time, meridian, active, repeat.toInt())
+            db.addRemainder(newRemainder)
             finish()
-            Toast.makeText(this, "Remainder Saved", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(this, "Remainder added", Toast.LENGTH_SHORT).show()
         }
 
         binding.addBackButton.setOnClickListener {
-            if (hasChanges()) {
-                AlertDialog.Builder(this)
-                    .setTitle("Save changes?")
-                    .setMessage("You have unsaved changes. Do you want to save them?")
-                    .setPositiveButton("OK") { _, _ ->
-                        // Save current details
-                        saveDetails()
-                        // Navigate back
-                        finish()
-                    }
-                    .setNegativeButton("Cancel") { _, _ ->
-                        // Navigate back without saving
-                        finish()
-                    }
-                    .show()
-            } else {
-                // Navigate back without saving
-                finish()
-            }
+            finish()
         }
     }
-    private fun setAlarm(id: Long, title: String, content: String, date: String, time: String, meridian: String, active: String, repeat:Int) {
+
+    private fun setAlarm(id: Long, title: String, content: String, date: String, time: String, meridian: String, active: String, repeat: Int) {
         if (active == "true") {
             val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
             val dateInString = "$date $time $meridian"
@@ -153,7 +136,6 @@ class AddRemainderActivity : AppCompatActivity() {
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-                // If the app cannot schedule exact alarms, show the system settings screen where the user can enable this option
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))
                 startActivity(intent)
             } else {
@@ -164,35 +146,13 @@ class AddRemainderActivity : AppCompatActivity() {
                         putExtra("id", id.toInt())
                     }
 
+                    // Add 'i' to the request code to make it unique for each alarm
                     val pendingIntent = PendingIntent.getBroadcast(this, id.toInt() + i, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
                     // Set the alarm to go off after i * 5 seconds
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + i * 5000, pendingIntent)
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + i * 3000, pendingIntent)
                 }
             }
         }
     }
-
-    private fun hasChanges(): Boolean {
-        // Check if any field has been modified
-        return binding.titleEditText.text.isNotEmpty() ||
-                binding.contentEditText.text.isNotEmpty() ||
-                binding.timeEditText.text.isNotEmpty() ||
-                binding.dateEditText.text.isNotEmpty() ||
-                binding.repeatEditText.text.isNotEmpty() ||
-                binding.activeEditStatus.isChecked
-    }
-
-    private fun saveDetails() {
-        val title = binding.titleEditText.text.toString()
-        val content = binding.contentEditText.text.toString()
-        val time = binding.timeEditText.text.toString()
-        val date = binding.dateEditText.text.toString()
-        val meridian = binding.meridianSpinner.selectedItem.toString()
-        val repeat = binding.repeatEditText.text.toString()
-        val active = binding.activeEditStatus.isChecked.toString()
-        val remainderId = db.insertRemainder(title, content, time, date, meridian, repeat, active)
-        setAlarm(remainderId, title, content, date, time, meridian, active, repeat.toInt())
-    }
-
 }

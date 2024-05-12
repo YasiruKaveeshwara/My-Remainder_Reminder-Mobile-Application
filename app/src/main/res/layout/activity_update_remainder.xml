@@ -46,35 +46,30 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/editRepeatEditText"
+
+    <NumberPicker
+        android:id="@+id/editRepeatNumberPicker"
         android:layout_width="110dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="14dp"
         android:background="@drawable/blue_border"
-        android:gravity="top"
-        android:hint="Repeat"
-        android:paddingLeft="25dp"
-        android:paddingTop="14dp"
-        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.877"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.396"
+        app:layout_constraintStart_toEndOf="@+id/editDateEditText"
         app:layout_constraintTop_toBottomOf="@+id/editTitleEditText" />
 
     <Spinner
-    android:id="@+id/editMeridianSpinner"
-    android:layout_width="110dp"
-    android:layout_height="55dp"
-    android:layout_marginTop="20dp"
-    android:layout_marginEnd="36dp"
-    android:background="@drawable/blue_border"
+        android:id="@+id/editMeridianSpinner"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="36dp"
+        android:background="@drawable/blue_border"
         android:paddingHorizontal="20dp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.925"
-    app:layout_constraintStart_toEndOf="@+id/editTimeEditText"
-    app:layout_constraintTop_toBottomOf="@+id/editRepeatEditText" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.925"
+        app:layout_constraintStart_toEndOf="@+id/editTimeEditText"
+        app:layout_constraintTop_toBottomOf="@+id/editRepeatNumberPicker" />
 
     <TextView
         android:id="@+id/editTimeEditText"

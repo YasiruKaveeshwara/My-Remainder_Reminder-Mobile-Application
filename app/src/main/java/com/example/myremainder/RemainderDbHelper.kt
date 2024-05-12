@@ -89,23 +89,27 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
-    fun getRemainderById(id: Int): Remainder{
+    fun getRemainderById(id: Int): Remainder? {
         val db = readableDatabase
         val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $id"
         val cursor = db.rawQuery(query, null)
-        cursor.moveToFirst()
-
-        val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
-        val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
-        val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
-        val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
-        val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
-        val meridian = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MERIDIAN))
-        val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
-        val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
-        cursor.close()
-        db.close()
-        return Remainder(id, title, content, time, date, meridian, repeat, active)
+        if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+            val content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))
+            val time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME))
+            val date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE))
+            val meridian = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MERIDIAN))
+            val repeat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPEAT))
+            val active = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACTIVE))
+            cursor.close()
+            db.close()
+            return Remainder(id, title, content, time, date, meridian, repeat, active)
+        } else {
+            cursor.close()
+            db.close()
+            return null
+        }
     }
 
     fun deleteRemainder(id: Int){
@@ -114,5 +118,20 @@ class RemainderDbHelper (context: Context): SQLiteOpenHelper(context, DATABASE_N
         val whereArgs = arrayOf(id.toString())
         db.delete(TABLE_NAME, whereClause, whereArgs)
         db.close()
+    }
+
+    fun addRemainder(remainder: Remainder): Long {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+
+        contentValues.put(COLUMN_TITLE, remainder.title)
+        contentValues.put(COLUMN_CONTENT, remainder.content)
+        contentValues.put(COLUMN_TIME, remainder.time)
+        contentValues.put(COLUMN_DATE, remainder.date)
+        contentValues.put(COLUMN_MERIDIAN, remainder.meridian)
+        contentValues.put(COLUMN_REPEAT, remainder.repeat)
+        contentValues.put(COLUMN_ACTIVE, remainder.active)
+
+        return db.insert(TABLE_NAME, null, contentValues)
     }
 }
