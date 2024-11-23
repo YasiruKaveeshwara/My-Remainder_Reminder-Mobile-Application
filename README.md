@@ -1,1 +1,1 @@
-<h1> All commits are in the master branch </h1>
+<h3> Reminder Mobile Application Using Flutter & Firebase </h3>
