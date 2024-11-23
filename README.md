@@ -1,1 +1,1 @@
-<h3> Reminder Mobile Application Using Flutter & Firebase </h3>
+<h3> Reminder Mobile Application Using Kotlin & SQLite </h3>
